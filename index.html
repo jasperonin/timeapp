@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>   
+ 
+<script>
+    function onSuccess(user) {
+        var div = document.getElementById('emp');
+        div.value = user;
+      }google.script.run.withSuccessHandler(onSuccess)
+          .getEmail();
+</script>
+</head>
+<body>
+<div class="container w-25">
+  <div class="card ">
+    <div class="card-header">
+      <div id="MyClockDisplay" onload="showTime()"></div>
+    </div>
+
+    <div class="card-body">
+        <form>
+              <p class="mb-3" style="font-size:25px;">Picnista</p>
+              <input type="text" data-role="input" id="emp" disabled data-prepend="Picnista: " class="mb-3 w-100 p-2">
+              <select id="status" class="w-100 p-2">
+                <option disabled selected="selected">Select Status</option>
+              </select>
+          <input type="button" value="Clock In" id="clockin" class="button success outline rounded mt-3" onclick="ClockIn()" />
+          <input type="button" value="Clock Out" id="clockout" class="button success outline rounded mt-3" onclick="ClockOut()" />
+           <br><br>
+          <div class="alert alert-primary" role="alert" id="message">
+          </div>  
+        </form>
+    </div>
+      </div>
+  </div>
+</div>
+    <script>
+     $( document ).ready(function() {
+      getEmployees();
+      status();
+    });
+    function onSuccess(user) {
+        var div = document.getElementById('emp');
+        div.value = user;
+      }google.script.run.withSuccessHandler(onSuccess)
+          .getEmail();
+    
+    function getEmployees() 
+    {
+    
+    google.script.run.withSuccessHandler(function(ar) 
+    {
+    var employeeSelect = document.getElementById("employee");
+    console.log(ar);
+    
+    let option = document.createElement("option");
+    option.value = "";
+    option.text = "";
+    employeeSelect.appendChild(option);
+    
+    ar.forEach(function(item, index) 
+    {    
+      let option = document.createElement("option");
+      var employee = item[0];
+      option.value = item[0];
+      option.text = item[0];
+      employeeSelect.appendChild(option);    
+    });
+    }).getEmployees();
+    };
+    
+    function status() 
+    {
+    
+    google.script.run.withSuccessHandler(function(ar) 
+    {
+    var statusSelect = document.getElementById("status");
+    console.log(ar);
+    
+    let option = document.createElement("option");
+    option.value = "";
+    option.text = "";
+    statusSelect.appendChild(option);
+    
+    ar.forEach(function(item, index) 
+    {    
+      let option = document.createElement("option");
+      var status = item[0];
+      option.value = item[0];
+      option.text = item[0];
+      statusSelect.appendChild(option);    
+    });
+    }).status();
+    };
+    
+    
+   
+    
+    function ClockIn()
+    {
+    
+    $('#message').html("");
+    var employee = document.getElementById("emp").value;
+    var status = document.getElementById("status").value;
+    if(employee != ''&& status != '')
+    {
+    
+    google.script.run.withSuccessHandler(function(ar) 
+    {
+     console.log(ar);
+    ar.forEach(function(item, index) 
+    {
+    
+    if(item[0] == 'SUCCESS')
+    {
+    var message = item[2] + ' Clocked in at ' + item[1];
+    $('#message').html(message);
+    document.getElementById("message").className = "alert alert-primary";
+    }
+    else
+    {
+    var message = item[2] + ' ' + item[0];
+    $('#message').html(message);
+    document.getElementById("message").className = "alert alert-warning"; 
+    }
+    
+     
+    });
+    
+    })
+    .clockIn(employee,status);
+    
+    }
+    }
+    
+    function ClockOut()
+    {
+    
+    $('#message').html("");
+    var employee = document.getElementById("emp").value;
+    
+    if(employee != '')
+    {
+    
+    google.script.run.withSuccessHandler(function(ar) 
+    {
+    console.log(ar);
+    ar.forEach(function(item, index) 
+    {
+    
+    if(item[0] == 'SUCCESS')
+    {
+    var message = item[2] + ' Clocked out at ' + item[1];
+    $('#message').html(message);
+    document.getElementById("message").className = "alert alert-primary";
+    }
+    else
+    {
+    var message = item[2] + ' ' + item[0];
+    $('#message').html(message);
+    document.getElementById("message").className = "alert alert-warning"; 
+    }
+        
+    });
+    
+    }).clockOut(employee);
+    
+    }
+    }
+    
+    function showTime(){
+    var date = new Date();
+    var h = date.getHours(); // 0 - 23
+    var m = date.getMinutes(); // 0 - 59
+    var s = date.getSeconds(); // 0 - 59
+    var session = "PM";
+    
+    if(h == 0){
+        h = 12;
+    }
+    
+    if(h > 12){
+        h = h - 12;
+        session = "PM";
+    }
+    
+    h = (h < 10) ? "0" + h : h;
+    m = (m < 10) ? "0" + m : m;
+    s = (s < 10) ? "0" + s : s;
+    
+    var time = h + ":" + m + ":" + s + " " + session;
+    document.getElementById("MyClockDisplay").innerText = time;
+    document.getElementById("MyClockDisplay").textContent = time;
+    
+    setTimeout(showTime, 1000);
+    
+}
+
+showTime();
+    </script>
+</body>
+</html>
